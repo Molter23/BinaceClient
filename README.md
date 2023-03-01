@@ -1,3 +1,21 @@
 # Binance Client
 
-Repo created for learning  purpose
+Project created for learning purposes. 
+
+## Requirements
+
+To use Binance Client Python 3.10 is required and requirements installed.
+
+
+### Linux:
+```python
+
+pip install -r requirements.txt
+```
+## Usage
+
+```python
+Client = MarkerDataClient('TEST', requests.get)
+time =  Client.get_server_time()
+print(f"Server time: {time}")
+```
