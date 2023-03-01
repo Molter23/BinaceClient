@@ -63,38 +63,43 @@ class MarkerDataClient:
     def __init__(self, env: str, get_func: Callable[[str], requests.models.Response]) -> None:
         config = Config()
         BASE_URL = config.get_url(env)
-        print(type(get_func))
         self.request = get_func
-        self.endpoints = {'time': f'{BASE_URL}2',
+        self.endpoints = {'time': f'{BASE_URL}time',
                           'depth': f'{BASE_URL}depth?',
                           'avg_price': f'{BASE_URL}avgPrice?' 
                          }
 
 
-    def get_server_time(self) -> int:
+    def get_server_time(self) -> int|None:
         r = self.request(self.endpoints['time'])
         try:
             validate_response_code(r.status_code)
         except (BadRequestError, UnauthorizedError, PermisionError, NotFoundError, TimeourError) as error:
-            print(error)
+            # should be error log 
             return None
       
         return r.json()['serverTime']
-    
-        
-    def get_order_book(self, symbol: str='BTCUSDT', limit: int=1): # parse info
-        query_string = f"{self.endpoints['depth']}symbol={symbol}&limit={str(limit)}"
-        r = requests.get(query_string)
-        if r.status_code == 200:
-            return r.json()
-        else:
-            raise ValueError("Unexcepted error while fetching data")
 
     def get_average_price(self, symbol: str='BTCUSDT') -> AveragePrice:
         query_string = f"{self.endpoints['avg_price']}symbol={symbol}"
-        r = requests.get(query_string)
-        if r.status_code == 200:
-            return AveragePrice(r.json()['mins'],  r.json()['price'])
-        else:
-            raise ValueError("Unexcepted error while fetching data")
+        r = self.request(query_string)
+        try:
+            validate_response_code(r.status_code)
+        except (BadRequestError, UnauthorizedError, PermisionError, NotFoundError, TimeourError) as error:
+            # should be error log 
+            return None
+        
+        return AveragePrice(r.json()['mins'],  r.json()['price'])
+        
+     
+    def get_order_book(self, symbol: str='BTCUSDT', limit: int=1): # parse info
+        query_string = f"{self.endpoints['depth']}symbol={symbol}&limit={str(limit)}"
+        r = self.request(query_string)
+        try:
+            validate_response_code(r.status_code)
+        except (BadRequestError, UnauthorizedError, PermisionError, NotFoundError, TimeourError) as error:
+            # should be error log 
+            return None
+        
+        return r.json()
 
