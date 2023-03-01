@@ -1,6 +1,6 @@
 import requests
 
-class BinanceClient:
+class MarkerDataClient:
 
     @staticmethod
     def get_server_time(query: str) -> int:
