@@ -23,7 +23,41 @@ class AveragePrice:
     def __init__(self, time_interval: int, price: float):
         self.time_interval = time_interval
         self.price = price
+
+class BadRequestError(Exception):
+    pass
+
+class UnauthorizedError(Exception):
+    pass
+
+class PermisionError(Exception):
+    pass
+
+class NotFoundError(Exception):
+    pass
+
+class TimeourError(Exception):
+    pass 
+
     
+def validate_response_code(error_code: int) -> None: 
+    match error_code:
+        case 200:
+            pass
+        case 400: # autentication error
+            raise BadRequestError("ERROR 400 - check request arguments")
+        case 401: # require autorization
+            raise UnauthorizedError("ERROR 401 - requiere autorization")
+        case 403: # permisson 
+            raise PermisionError("ERROR 403 - permission require")
+        case 404: # data doesn't exist 
+            raise NotFoundError("ERROR 404 - data not found")
+        case 408: # Timeout
+            raise TimeourError("ERROR 408 - took to long to respond")
+        case _:
+            raise Exception(f"ERROR {error_code}")
+
+
 
 class MarkerDataClient:
 
@@ -38,10 +72,13 @@ class MarkerDataClient:
  
     def get_server_time(self) -> int:
         r = requests.get(self.endpoints['time'])
-        if r.status_code == 200:
-            return r.json()['serverTime']
-        else:
-            raise ValueError("Unexcepted error while fetching data")
+        try:
+            validate_response_code(r.status_code())
+        except (BadRequestError, UnauthorizedError, PermisionError, NotFoundError, TimeourError) as error:
+            pass
+      
+        return r.json()['serverTime']
+    
         
         
     def get_order_book(self, symbol: str='BTCUSDT', limit: int=1): # parse info
