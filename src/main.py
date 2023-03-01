@@ -1,14 +1,14 @@
 from BinanceClient.MarkerDataClient import MarkerDataClient
 
+import requests
+
 
 def main():
     if __name__ == "__main__":
-        Client = MarkerDataClient('TEST')
-        try: 
-            obj =  Client.get_average_price()
-            print(f"Server time: {obj.price} {obj.time_interval}")
-        except ValueError as err:
-            print("Handling run-time error: ", err)
+        Client = MarkerDataClient('TEST', requests.get)
+        obj =  Client.get_server_time()
+        print(f"Server time: {obj}")
+    
             
 
 main()

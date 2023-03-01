@@ -1,9 +1,8 @@
 import configparser
 import requests
-
+from collections.abc import Callable
 
 class Config:
-
     def __init__(self) -> None:
         config = configparser.ConfigParser()
         config.read('API.ini')
@@ -23,6 +22,7 @@ class AveragePrice:
     def __init__(self, time_interval: int, price: float):
         self.time_interval = time_interval
         self.price = price
+
 
 class BadRequestError(Exception):
     pass
@@ -60,26 +60,27 @@ def validate_response_code(error_code: int) -> None:
 
 
 class MarkerDataClient:
-
-    def __init__(self, env: str) -> None:
+    def __init__(self, env: str, get_func: Callable[[str], requests.models.Response]) -> None:
         config = Config()
         BASE_URL = config.get_url(env)
-       
-        self.endpoints = {'time': f'{BASE_URL}time',
+        print(type(get_func))
+        self.request = get_func
+        self.endpoints = {'time': f'{BASE_URL}2',
                           'depth': f'{BASE_URL}depth?',
                           'avg_price': f'{BASE_URL}avgPrice?' 
                          }
- 
+
+
     def get_server_time(self) -> int:
-        r = requests.get(self.endpoints['time'])
+        r = self.request(self.endpoints['time'])
         try:
-            validate_response_code(r.status_code())
+            validate_response_code(r.status_code)
         except (BadRequestError, UnauthorizedError, PermisionError, NotFoundError, TimeourError) as error:
-            pass
+            print(error)
+            return None
       
         return r.json()['serverTime']
     
-        
         
     def get_order_book(self, symbol: str='BTCUSDT', limit: int=1): # parse info
         query_string = f"{self.endpoints['depth']}symbol={symbol}&limit={str(limit)}"
