@@ -5,7 +5,7 @@ def main():
     if __name__ == "__main__":
         Client = MarkerDataClient()
         try: 
-            server_time = Client.get_order_book()
+            server_time = Client.get_server_time()
             print(f"Server time: {server_time}")
         except ValueError as err:
             print("Handling run-time error: ", err)
