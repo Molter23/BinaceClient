@@ -1,3 +1,3 @@
 # Binance Client
 
-Repo created for learning purpose
+Repo created for learning  purpose
