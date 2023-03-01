@@ -12,7 +12,7 @@ To use Binance Client Python 3.10 is required and requirements installed.
 
 pip install -r requirements.txt
 ```
-## Usage
+## Usage Example
 
 ```python
 Client = MarkerDataClient('TEST', requests.get)
