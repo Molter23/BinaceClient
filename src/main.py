@@ -7,7 +7,7 @@ def main():
     if __name__ == "__main__":
         Client = MarkerDataClient('TEST', requests.get)
         obj =  Client.get_order_book()
-        print(f"Server time: {obj}")
+        print(obj.asks)
     
             
 main()
