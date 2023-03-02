@@ -1,5 +1,7 @@
 import configparser
 import requests
+import logging
+
 from collections.abc import Callable
 
 class Config:
@@ -8,11 +10,12 @@ class Config:
         config.read('API.ini')
         self.config = config
         
+        
     def get_url(self, env: str) -> str:
         if(env == 'TEST'):
             return self.config['TEST']['URL']
         elif(env =='PROD'):
-            return self.config['TEST']['URL']
+            return self.config['PROD']['URL']
         else:
             raise NameError('There is no URL defined for this environment')
 
@@ -62,6 +65,7 @@ def validate_response_code(error_code: int) -> None:
 class MarkerDataClient:
     def __init__(self, env: str, get_func: Callable[[str], requests.models.Response]) -> None:
         config = Config()
+        pass
         BASE_URL = config.get_url(env)
         self.request = get_func
         self.endpoints = {'time': f'{BASE_URL}time',
@@ -75,7 +79,7 @@ class MarkerDataClient:
         try:
             validate_response_code(r.status_code)
         except (BadRequestError, UnauthorizedError, PermisionError, NotFoundError, TimeourError) as error:
-            # should be error log 
+            print(error)
             return None
       
         return r.json()['serverTime']
@@ -101,5 +105,5 @@ class MarkerDataClient:
             # should be error log 
             return None
         
-        return r.json()
+        return r.json() 
 
