@@ -40,7 +40,8 @@ class MarkerDataClient:
         self.request = get_func
         self.endpoints = {'time': f'{BASE_URL}time',
                           'depth': f'{BASE_URL}depth?',
-                          'avg_price': f'{BASE_URL}avgPrice?' 
+                          'avg_price': f'{BASE_URL}avgPrice?',
+                          'symbol_price': f'{BASE_URL}ticker/price?'
                          }
     
 
@@ -84,6 +85,11 @@ class MarkerDataClient:
         query_string = f"{self.endpoints['depth']}symbol={symbol}&limit={str(limit)}"
         r = self.make_request(query_string)      
         return self.tranform_order_book(r.json())
+    
+    def get_price(self, symbol: str='BTCUSDT'):
+        query_string = f"{self.endpoints['symbol_price']}symbol={symbol}"
+        r = self.make_request(query_string)      
+        return r.json()
 
 
 
